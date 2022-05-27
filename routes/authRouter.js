@@ -1,9 +1,9 @@
-import Router from 'express';
+const Router = require('express');
 const router = new Router();
-import { registration, login, getUsers } from '../controllers/authController';
-import { check } from 'express-validator';
-import authMiddleware from '../middleware/authMiddleware';
-import roleMiddleware from '../middleware/roleMiddleware';
+const controller = require('../controllers/authController');
+const { check } = require('express-validator');
+const authMiddleware = require('../middleware/authMiddleware');
+const roleMiddleware = require('../middleware/roleMiddleware');
 
 router.post(
   '/registration',
@@ -14,9 +14,9 @@ router.post(
       'Password cannot be less than 4 or greater than 10 character'
     ).isLength({ min: 4, max: 10 }),
   ],
-  registration
+  controller.registration
 );
-router.post('/login', login);
-router.get('/users', roleMiddleware(['ADMIN']), getUsers);
+router.post('/login', controller.login);
+router.get('/users', roleMiddleware(['ADMIN']), controller.getUsers);
 
-export default router;
+module.exports = router;

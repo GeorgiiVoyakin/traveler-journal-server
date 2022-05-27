@@ -1,16 +1,19 @@
-import express, { json } from 'express';
+const express = require('express');
 const app = express();
 require('dotenv').config();
 const port = process.env.PORT || 3001;
-import connect from 'mongoose';
-import authRouter from './routes/authRouter';
+const mongoose = require('mongoose');
+const authRouter = require('./routes/authRouter');
 
-app.use(json());
+app.use(express.json());
 app.use('/auth', authRouter);
 
-connect(process.env.DB, { useNewUrlParser: true })
+mongoose
+  .connect(process.env.DB, { useNewUrlParser: true })
   .then(() => console.log(`Database connected successfully`))
   .catch((err) => console.log(err));
+
+mongoose.Promise = global.Promise;
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

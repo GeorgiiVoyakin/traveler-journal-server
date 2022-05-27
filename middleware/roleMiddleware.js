@@ -1,6 +1,6 @@
-import { verify } from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
-export default function (roles) {
+module.exports = function (roles) {
   return function (req, res, next) {
     if (req.method === 'OPTIONS') {
       next();
@@ -11,7 +11,7 @@ export default function (roles) {
       if (!token) {
         return res.status(403).json({ message: 'User is not authorized' });
       }
-      const { roles: userRoles } = verify(token, process.env.jwtSecretKey);
+      const { roles: userRoles } = jwt.verify(token, process.env.jwtSecretKey);
       let hasRole = false;
       userRoles.forEach((role) => {
         if (roles.includes(role)) {
@@ -27,4 +27,4 @@ export default function (roles) {
       return res.status(403).json({ message: 'User is not authorized' });
     }
   };
-}
+};
