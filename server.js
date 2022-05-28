@@ -4,9 +4,11 @@ require('dotenv').config();
 const port = process.env.PORT || 3001;
 const mongoose = require('mongoose');
 const authRouter = require('./routes/authRouter');
+const noteRouter = require('./routes/noteRouter');
 
 app.use(express.json());
 app.use('/auth', authRouter);
+app.use('/note', noteRouter);
 
 mongoose
   .connect(process.env.DB, { useNewUrlParser: true })
