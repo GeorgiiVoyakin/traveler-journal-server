@@ -1,4 +1,4 @@
-const { Note } = require('../models/Note');
+const Note = require('../models/Note');
 
 class noteController {
   async create(req, res) {
