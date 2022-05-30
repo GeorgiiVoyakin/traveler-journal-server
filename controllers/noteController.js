@@ -5,7 +5,7 @@ class noteController {
     try {
       const { content, latitude, longitude, author } = req.body;
       const note = new Note({ content, latitude, longitude, author });
-      note_from_db = Note.findOne({ note });
+      const note_from_db = Note.findOne({ note });
       if (note_from_db) {
         return res.status(200).json({ message: 'Note already exists' });
       }
