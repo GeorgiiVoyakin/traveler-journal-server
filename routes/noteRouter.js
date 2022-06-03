@@ -5,6 +5,8 @@ const controller = require('../controllers/noteController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 router.post('/create', authMiddleware, controller.create);
+router.delete('/delete', authMiddleware, controller.remove);
+router.put('/update/:id', authMiddleware, controller.update);
 // router.get('/note', roleMiddleware(['ADMIN']), controller.getNotes);
 
 module.exports = router;
