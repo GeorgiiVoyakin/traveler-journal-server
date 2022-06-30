@@ -1,18 +1,13 @@
 const Note = require('../models/Note');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const check_required_fields = require('./utils/utils');
 
 class noteController {
   async create(req, res) {
     try {
       const required_fields = ['content', 'latitude', 'longitude'];
-      const isBadRequest = required_fields.some((item) => {
-        if (!Object.hasOwn(req.body, item)) {
-          return true;
-        } else {
-          return false;
-        }
-      });
+      const isBadRequest = check_required_fields(req, required_fields);
 
       if (isBadRequest) {
         return res.status(400).json({
@@ -85,10 +80,24 @@ class noteController {
 
   async remove(req, res) {
     try {
+      const required_fields = ['id'];
+      const isBadRequest = check_required_fields(req, required_fields);
+
+      if (isBadRequest) {
+        return res.status(400).json({
+          message: `Some of the required fields: ${required_fields} are missing`,
+        });
+      }
+
       const id = req.body.id;
-      const note_from_db = Note.findById(id);
+      const token = req.headers.authorization.split(' ')[1];
+      const user_id = jwt.verify(token, process.env.jwtSecretKey).id;
+      const note_from_db = await Note.findById(id)
+        .where({ author: user_id })
+        .exec();
+
       if (note_from_db) {
-        Note.deleteOne(note_from_db);
+        await Note.deleteOne(note_from_db).exec();
         return res.status(200).json({ message: 'Note deleted' });
       }
       return res.status(200).json({ message: 'Note does not exists' });
