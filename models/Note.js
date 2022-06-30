@@ -7,4 +7,6 @@ const Note = new Schema({
   author: { type: String, ref: 'User', required: true },
 });
 
+Note.index({ latitude: 1, longitude: 1, author: 1 }, { unique: true });
+
 module.exports = model('Note', Note);
