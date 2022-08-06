@@ -2,6 +2,7 @@ const Note = require('../models/Note');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const check_required_fields = require('./utils/utils');
+const { isValidObjectId } = require('mongoose');
 
 class noteController {
   async create(req, res) {
@@ -46,22 +47,31 @@ class noteController {
 
   async update(req, res) {
     try {
-      const id = req.params.id;
-      const { content, latitude, longitude, author } = req.body;
-      const note_from_db = Note.findById(id);
+      const { content, latitude, longitude, author: username, id } = req.body;
+      const required_fields = ['author', 'id'];
+      const isBadRequest = check_required_fields(req, required_fields);
+      if (isBadRequest) {
+        return res.status(400).json({
+          message: `Some of the required fields: ${required_fields} are missing`,
+        });
+      }
+
+      if (!isValidObjectId(id)) {
+        return res.status(400).json({
+          message: `Invalid note id: ${id}`,
+        });
+      }
+
+      const note_from_db = await Note.findById(id).exec();
+      console.log(note_from_db);
+
       if (note_from_db !== undefined) {
-        console.log(content);
-        console.log(latitude);
-        console.log(longitude);
-        console.log(author);
-        if (author !== undefined) {
-          console.log(User.findById(author));
-          if (User.findById(author) === undefined) {
-            return res
-              .status(400)
-              .json({ message: 'Trying to update note for not existing user' });
-          }
+        if ((await User.findOne({ username: username }).exec()) === null) {
+          return res
+            .status(400)
+            .json({ message: 'Trying to update note for not existing user' });
         }
+
         if (content !== undefined) {
         }
         if (latitude !== undefined) {
