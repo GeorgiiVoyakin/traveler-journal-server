@@ -63,24 +63,31 @@ class noteController {
       }
 
       const note_from_db = await Note.findById(id).exec();
-      console.log(note_from_db);
 
-      if (note_from_db !== undefined) {
-        if ((await User.findOne({ username: username }).exec()) === null) {
+      if (note_from_db !== null) {
+        if (
+          (await User.findById(note_from_db.author).exec()).username !==
+          username
+        ) {
           return res
-            .status(400)
-            .json({ message: 'Trying to update note for not existing user' });
+            .status(403)
+            .json({ message: 'Trying to update note for another user' });
         }
 
         if (content !== undefined) {
+          note_from_db.content = content;
         }
         if (latitude !== undefined) {
+          note_from_db.latitude = latitude;
         }
         if (longitude !== undefined) {
+          note_from_db.longitude = longitude;
         }
+        await note_from_db.save();
+
         return res.status(200).json({ message: 'Note updated' });
       }
-      return res.status(200).json({ message: 'Note does not exists' });
+      return res.status(404).json({ message: 'Note does not exists' });
     } catch (e) {
       return res
         .status(500)
