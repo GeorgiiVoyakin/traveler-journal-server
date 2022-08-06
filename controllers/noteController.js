@@ -2,7 +2,7 @@ const Note = require('../models/Note');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const check_required_fields = require('./utils/utils');
-const { isValidObjectId } = require('mongoose');
+const { isValidObjectId, default: mongoose } = require('mongoose');
 
 class noteController {
   async create(req, res) {
@@ -34,6 +34,9 @@ class noteController {
       await note.save();
       return res.status(201).json({ message: 'New note created' });
     } catch (e) {
+      if (e instanceof mongoose.Error.ValidationError) {
+        return res.status(400).json({ message: e.message });
+      }
       return res
         .status(500)
         .json({ message: 'Some error while creating new note ' + e });
