@@ -45,7 +45,22 @@ class noteController {
 
   async getAllByUser(req, res) {
     try {
-    } catch (e) {}
+      const { id } = req.body;
+      const required_fields = ['id'];
+      const isBadRequest = check_required_fields(req, required_fields);
+      if (isBadRequest) {
+        return res.status(400).json({
+          message: `Some of the required fields: ${required_fields} are missing`,
+        });
+      }
+
+      const notes = await Note.find({ author: id }).exec();
+      return res.status(200).json(notes);
+    } catch (e) {
+      return res
+        .status(500)
+        .json({ message: 'Failed to get notes for given user ' + e });
+    }
   }
 
   async update(req, res) {

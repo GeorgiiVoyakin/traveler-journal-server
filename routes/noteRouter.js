@@ -8,5 +8,6 @@ router.post('/create', authMiddleware, controller.create);
 router.delete('/delete', authMiddleware, controller.remove);
 router.put('/update', authMiddleware, controller.update);
 // router.get('/note', roleMiddleware(['ADMIN']), controller.getNotes);
+router.get('/get-by-user', authMiddleware, controller.getAllByUser);
 
 module.exports = router;
