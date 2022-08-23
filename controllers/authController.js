@@ -8,6 +8,8 @@ const generateAccessToken = (id, roles) => {
   const payload = { id, roles };
   return jwt.sign(payload, process.env.jwtSecretKey, { expiresIn: '24h' });
 };
+const check_required_fields = require('./utils/utils');
+
 class authController {
   async registration(req, res) {
     try {
@@ -17,6 +19,15 @@ class authController {
           .status(400)
           .json({ message: 'Registration validation error', errors });
       }
+      const required_fields = ['username', 'password'];
+      const isBadRequest = check_required_fields(req, required_fields);
+
+      if (isBadRequest) {
+        return res.status(400).json({
+          message: `Some of the required fields: ${required_fields} are missing`,
+        });
+      }
+
       const { username, password } = req.body;
       const candidate = await User.findOne({ username });
       if (candidate) {
