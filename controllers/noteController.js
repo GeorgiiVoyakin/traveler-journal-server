@@ -63,6 +63,17 @@ class noteController {
     }
   }
 
+  async getAllNotesForCurrentUser(req, res) {
+    try {
+      const notes = await Note.find({ author: req.user.id }).exec();
+      return res.status(200).json(notes);
+    } catch (e) {
+      return res
+        .status(500)
+        .json({ message: 'Failed to get notes for given user ' + e });
+    }
+  }
+
   async update(req, res) {
     try {
       const { content, latitude, longitude, author: username, id } = req.body;
