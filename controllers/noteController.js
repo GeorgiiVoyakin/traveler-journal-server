@@ -19,8 +19,10 @@ class noteController {
       const token = req.headers.authorization.split(' ')[1];
       const user_id = jwt.verify(token, process.env.jwtSecretKey).id;
 
-      const { content, latitude, longitude } = req.body;
+      const { title, content, latitude, longitude } = req.body;
+
       const note_data = {
+        title,
         content,
         latitude,
         longitude,
