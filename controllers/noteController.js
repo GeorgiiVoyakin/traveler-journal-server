@@ -145,7 +145,7 @@ class noteController {
         .exec();
 
       if (note_from_db) {
-        await Note.deleteOne(note_from_db).exec();
+        await Note.deleteOne({ _id: id }).exec();
         return res.status(200).json({ message: 'Note deleted' });
       }
       return res.status(200).json({ message: 'Note does not exists' });
