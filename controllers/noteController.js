@@ -38,7 +38,17 @@ class noteController {
         .then((note) =>
           res.status(201).json({ message: 'New note created', id: note.id })
         )
-        .catch((err) => console.log('Error while creating note ' + err));
+        .catch((err) => {
+          if (err.name === 'MongoServerError' && err.code === 11000) {
+            return res.status(409).json({
+              message:
+                'Note with same combination of {user, latitude, longitude} already exists',
+            });
+          }
+          return res
+            .status(500)
+            .json({ message: 'Error while creating new note ' + err });
+        });
     } catch (e) {
       if (e instanceof mongoose.Error.ValidationError) {
         return res.status(400).json({ message: e.message });
