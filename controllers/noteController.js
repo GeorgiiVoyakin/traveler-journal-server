@@ -78,14 +78,7 @@ class noteController {
 
   async update(req, res) {
     try {
-      const { content, latitude, longitude, author: username, id } = req.body;
-      const required_fields = ['author', 'id'];
-      const isBadRequest = check_required_fields(req, required_fields);
-      if (isBadRequest) {
-        return res.status(400).json({
-          message: `Some of the required fields: ${required_fields} are missing`,
-        });
-      }
+      const { title, content, latitude, longitude, id } = req.body;
 
       if (!isValidObjectId(id)) {
         return res.status(400).json({
@@ -97,14 +90,17 @@ class noteController {
 
       if (note_from_db !== null) {
         if (
-          (await User.findById(note_from_db.author).exec()).username !==
-          username
+          (await User.findById(note_from_db.author).exec())._id.toString() !==
+          req.user.id
         ) {
           return res
             .status(403)
             .json({ message: 'Trying to update note for another user' });
         }
 
+        if (title !== undefined) {
+          note_from_db.title = title;
+        }
         if (content !== undefined) {
           note_from_db.content = content;
         }
