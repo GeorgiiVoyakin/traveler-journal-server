@@ -33,8 +33,12 @@ class noteController {
         return res.status(200).json({ message: 'Note already exists' });
       }
       const note = new Note(note_data);
-      await note.save();
-      return res.status(201).json({ message: 'New note created' });
+      note
+        .save()
+        .then((note) =>
+          res.status(201).json({ message: 'New note created', id: note.id })
+        )
+        .catch((err) => console.log('Error while creating note ' + err));
     } catch (e) {
       if (e instanceof mongoose.Error.ValidationError) {
         return res.status(400).json({ message: e.message });
